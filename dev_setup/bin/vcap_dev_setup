@@ -171,7 +171,7 @@ readonly CF_CORE_REPOS=(dea router stager)
 for REPO in "${CF_CORE_REPOS[@]}"; do
   if [ ! -d $CLOUDFOUNDRY_HOME/$REPO ]; then
     if ! (cd $CLOUDFOUNDRY_HOME
-      git clone --no-checkout $VCAP_REPO_BASE/$REPO
+      git clone --no-checkout https://github.com/cloudfoundry/$REPO
       cd $REPO
       git checkout $VCAP_REPO_BRANCH
       git submodule update --recursive --init
