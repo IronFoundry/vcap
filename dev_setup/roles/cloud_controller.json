@@ -9,6 +9,8 @@
                  "recipe[essentials]",
                  "recipe[ruby]",
                  "recipe[ruby::ruby18]",
+                 "recipe[nginx]",
                  "recipe[ccdb]",
+                 "recipe[staging_manifest]",
                  "recipe[cloud_controller]"]
 }
