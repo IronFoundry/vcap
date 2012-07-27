@@ -93,11 +93,11 @@ if [ -z "$CLOUDFOUNDRY_DOMAIN" ]; then
 fi
 
 if [ -z "$VCAP_REPO_BASE" ]; then
-  VCAP_REPO_BASE=https://github.com/cloudfoundry
+  VCAP_REPO_BASE=https://github.com/IronFoundry
 fi
 
 if [ -z "$VCAP_REPO_BRANCH" ]; then
-  VCAP_REPO_BRANCH=master
+  VCAP_REPO_BRANCH=ironfoundry
 fi
 
 # Check if we have access to the web
@@ -108,7 +108,7 @@ if ! run_cmd apt-get $APT_CONFIG install -qym wget; then
 fi
 
 echo "Checking web connectivity."
-if ! wget -q -T 2 -t 2 -O - http://api.cloudfoundry.com/info | grep "Cloud Application Platform" > /dev/null; then
+if ! wget -q -T 2 -t 2 -O - http://api.ironfoundry.me/info | grep "Cloud Application Platform" > /dev/null; then
   echo "Giving up. Cannot connect to the web. Check your proxy settings if you are behind a proxy."
   exit 1
 fi
@@ -142,7 +142,7 @@ ${GEM} list -i blobstore_client || sudo ${GEM} install blobstore_client -q --no-
 echo "Installing rake..."
 ${GEM} list -i rake -i || sudo ${GEM} install rake -q --no-ri --no-rdoc > /dev/null
 
-# Clone cloudfoundry repo
+# Clone ironfoundry repo
 echo "Installing git..."
 run_cmd apt-get $APT_CONFIG install -qym git-core
 
@@ -157,7 +157,7 @@ for REPO in vcap "${CORE_REPOS[@]}"; do
       git checkout $VCAP_REPO_BRANCH
       git submodule update --recursive --init
     ); then
-      echo "Unable to clone cloudfoundry $REPO repo."
+      echo "Unable to clone ironfoundry $REPO repo."
       exit 1
     fi
   else
