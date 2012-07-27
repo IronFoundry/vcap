@@ -6,13 +6,30 @@ service:
   version: "<%= node[:postgresql][:service_version] %>"
   description: 'PostgreSQL database service'
   plans: ['free']
+  default_plan: 'free'
   tags: ['postgresql', 'postgresql-<%= node[:postgresql][:service_version] %>', 'relational']
-
-ip_route: localhost
+  timeout: <%= node[:postgresql_gateway][:service][:timeout] %>
 index: 0
 token: <%= node[:postgresql_node][:token] %>
 logging:
   level: debug
 mbus: nats://<%= node[:nats_server][:user] %>:<%= node[:nats_server][:password] %>@<%= node[:nats_server][:host] %>:<%= node[:nats_server][:port] %>/
 pid: /var/vcap/sys/run/postgresql_service.pid
-node_timeout: <%= node[:postgresql_node][:timeout]%>
+node_timeout: <%= node[:postgresql_gateway][:node_timeout] %>
+<%if node[:service_lifecycle][:enable]%>
+resque:
+  host: <%= node[:redis_resque][:host]%>
+  port: <%= node[:redis_resque][:port]%>
+  password: <%= node[:redis_resque][:password] %>
+  expire: <%= node[:redis_resque][:expire]%>
+download_url_template: "http://service-serialization.<%= node[:deployment][:domain] %>/serialized/%{service}/%{name}/snapshots/%{snapshot_id}?token=%{token}"
+upload_temp_dir: /tmp
+plan_management:
+  plans:
+    free:
+      lifecycle:
+        snapshot:
+          quota: <%= node[:service_lifecycle][:snapshot_quota] || "5" %>
+        serialization: enable
+        job: enable
+<%end%>

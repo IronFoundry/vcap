@@ -32,9 +32,9 @@ external_port: 9022 #public CC port
 
 # nginx proxy provide multiple functions including offloading of file uploads/downloads.
 nginx:
-  use_nginx: false   #nginx proxy in front of CC?
-  # instance_socket: /tmp/cloud_controller.sock
-  insecure_instance_port: 9025 #debug only!!!! -- not for production use.
+  use_nginx: true   #nginx proxy in front of CC?
+  instance_socket: /tmp/cloud_controller.sock
+  # insecure_instance_port: 9025 #debug only!!!! -- not for production use.
 
 # if log_file is set, it must be a fully-qualified path,
 # because the bin/vcap script reads it directly from the file.
@@ -83,13 +83,26 @@ uaa:
   client_secret: <%= node[:uaa][:cloud_controller][:password] %>
   token_creation_email_filter: [""]
 
+# redis for new stager
+redis:
+  host: <%= node[:staging_redis][:host] %>
+  port: <%= node[:staging_redis][:port] %>
+  password: <%= node[:staging_redis][:password] %>
+
 # App staging parameters
 staging:
   max_concurrent_stagers: 10
   # Max duration for staging process
   max_staging_runtime:    120 # secs
+
   # Create a secure environment for staging
   secure: false
+  new_stager_percent: 100
+  new_stager_email_regexp: .*@vmware.com
+
+  auth:
+    user: zxsfhgjg
+    password: ZNVfdase9
 
 # admin support
 admins: [ <%= node[:cloud_controller][:admins].join(", ") %> ]
@@ -140,14 +153,31 @@ runtimes:
     debug_modes:
       - run
       - suspend
+  node08:
+    version: 0.8.2
+    debug_modes:
+      - run
+      - suspend
   java:
     version: 1.6.0
     debug_modes:
       - run
       - suspend
+<% if node[:java7][:available?] %>
+  java7:
+    version: 1.7.0
+    debug_modes:
+      - run
+      - suspend
+<% end %>
   php:
     version: 5.3.[2-6]
-  erlangR14B02:
+  erlangR14B01:
     version: ".* 5.8.3"
   python2:
     version: 2.[67]
+
+<% if node[:service_lifecycle][:enable] == true %>
+service_lifecycle:
+  max_upload_size: <%= node[:service_lifecycle][:max_upload_size] || 1 %>
+<% end %>
