@@ -1,3 +1,4 @@
+default[:staging_manifest][:aspdotnet] = "aspdotnet.yml"
 default[:staging_manifest][:grails] = "grails.yml"
 default[:staging_manifest][:lift] = "lift.yml"
 default[:staging_manifest][:node] = "node.yml"
