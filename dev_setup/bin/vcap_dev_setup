@@ -15,8 +15,6 @@ OPTIONS:
   -c           deployment config
   -d           cloudfoundry home
   -D           cloudfoundry domain (default: vcap.me)
-  -r           cloud foundry repo base
-  -b           cloud foundry repo branch/tag/SHA
 EOF
 }
 
@@ -71,12 +69,6 @@ do
     D)
       CLOUDFOUNDRY_DOMAIN=$OPTARG
       ;;
-    r)
-      VCAP_REPO_BASE=$OPTARG
-      ;;
-    b)
-      VCAP_REPO_BRANCH=$OPTARG
-      ;;
     p)
       PROXY=$OPTARG
       export http_proxy=$PROXY
@@ -90,14 +82,6 @@ fi
 
 if [ -z "$CLOUDFOUNDRY_DOMAIN" ]; then
   CLOUDFOUNDRY_DOMAIN=vcap.me
-fi
-
-if [ -z "$VCAP_REPO_BASE" ]; then
-  VCAP_REPO_BASE=https://github.com/IronFoundry
-fi
-
-if [ -z "$VCAP_REPO_BRANCH" ]; then
-  VCAP_REPO_BRANCH=ironfoundry
 fi
 
 # Check if we have access to the web
@@ -148,9 +132,30 @@ run_cmd apt-get $APT_CONFIG install -qym git-core
 
 [ -d $CLOUDFOUNDRY_HOME ] || mkdir $CLOUDFOUNDRY_HOME
 
-readonly IF_CORE_REPOS=(vcap cloud_controller)
+CF_BASE_URL='https://github.com/cloudfoundry'
+IF_BASE_URL='https://github.com/IronFoundry'
 
-for REPO in "${IF_CORE_REPOS[@]}"; do
+declare -a CLOUDFOUNDRY_REPOS=( vcap dea router stager )
+declare -a IRONFOUNDRY_REPOS=( cloud_controller )
+
+declare -A REPO_TO_GITHUB_BASE
+declare -A REPO_TO_BRANCH
+
+for CF_REPO in ${CLOUDFOUNDRY_REPOS[*]}
+do
+  REPO_TO_GITHUB_BASE[$CF_REPO]=$CF_BASE_URL
+  REPO_TO_BRANCH[$CF_REPO]='master'
+done
+for IF_REPO in ${IRONFOUNDRY_REPOS[*]}
+do
+  REPO_TO_GITHUB_BASE[$IF_REPO]=$IF_BASE_URL
+  REPO_TO_BRANCH[$IF_REPO]='ironfoundry'
+done
+
+for REPO in ${!REPO_TO_GITHUB_BASE[*]}
+do
+  VCAP_REPO_BASE=${REPO_TO_GITHUB_BASE[$REPO]}
+  VCAP_REPO_BRANCH=${REPO_TO_BRANCH[$REPO]}
   if [ ! -d $CLOUDFOUNDRY_HOME/$REPO ]; then
     if ! (cd $CLOUDFOUNDRY_HOME
       git clone --no-checkout $VCAP_REPO_BASE/$REPO
@@ -159,24 +164,6 @@ for REPO in "${IF_CORE_REPOS[@]}"; do
       git submodule update --recursive --init
     ); then
       echo "Unable to clone ironfoundry $REPO repo."
-      exit 1
-    fi
-  else
-    clear_bundler_settings $CLOUDFOUNDRY_HOME/$REPO
-  fi
-done
-
-readonly CF_CORE_REPOS=(dea router stager)
-
-for REPO in "${CF_CORE_REPOS[@]}"; do
-  if [ ! -d $CLOUDFOUNDRY_HOME/$REPO ]; then
-    if ! (cd $CLOUDFOUNDRY_HOME
-      git clone --no-checkout https://github.com/cloudfoundry/$REPO
-      cd $REPO
-      git checkout $VCAP_REPO_BRANCH
-      git submodule update --recursive --init
-    ); then
-      echo "Unable to clone cloudfoundry $REPO repo."
       exit 1
     fi
   else
