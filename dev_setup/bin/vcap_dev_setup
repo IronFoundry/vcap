@@ -146,10 +146,11 @@ ${GEM} list -i rake -i || sudo ${GEM} install rake -q --no-ri --no-rdoc > /dev/n
 echo "Installing git..."
 run_cmd apt-get $APT_CONFIG install -qym git-core
 
-readonly CORE_REPOS=(cloud_controller dea router stager)
-
 [ -d $CLOUDFOUNDRY_HOME ] || mkdir $CLOUDFOUNDRY_HOME
-for REPO in vcap "${CORE_REPOS[@]}"; do
+
+readonly IF_CORE_REPOS=(vcap cloud_controller)
+
+for REPO in "${IF_CORE_REPOS[@]}"; do
   if [ ! -d $CLOUDFOUNDRY_HOME/$REPO ]; then
     if ! (cd $CLOUDFOUNDRY_HOME
       git clone --no-checkout $VCAP_REPO_BASE/$REPO
@@ -165,6 +166,23 @@ for REPO in vcap "${CORE_REPOS[@]}"; do
   fi
 done
 
+readonly CF_CORE_REPOS=(dea router stager)
+
+for REPO in "${CF_CORE_REPOS[@]}"; do
+  if [ ! -d $CLOUDFOUNDRY_HOME/$REPO ]; then
+    if ! (cd $CLOUDFOUNDRY_HOME
+      git clone --no-checkout $VCAP_REPO_BASE/$REPO
+      cd $REPO
+      git checkout $VCAP_REPO_BRANCH
+      git submodule update --recursive --init
+    ); then
+      echo "Unable to clone cloudfoundry $REPO repo."
+      exit 1
+    fi
+  else
+    clear_bundler_settings $CLOUDFOUNDRY_HOME/$REPO
+  fi
+done
 
 # Our deployment code needs this gem. Using bundler seems like an overkill for
 # the deployment code. So for now just manually install the required gem.
