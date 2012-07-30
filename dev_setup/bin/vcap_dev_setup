@@ -135,8 +135,8 @@ run_cmd apt-get $APT_CONFIG install -qym git-core
 CF_BASE_URL='https://github.com/cloudfoundry'
 IF_BASE_URL='https://github.com/IronFoundry'
 
-declare -a CLOUDFOUNDRY_REPOS=( dea router stager )
-declare -a IRONFOUNDRY_REPOS=( vcap cloud_controller )
+declare -a CLOUDFOUNDRY_REPOS=( dea router )
+declare -a IRONFOUNDRY_REPOS=( vcap cloud_controller stager )
 
 declare -A REPO_TO_GITHUB_BASE
 declare -A REPO_TO_BRANCH
