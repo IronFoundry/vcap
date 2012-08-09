@@ -68,8 +68,9 @@ Run the install script. It'll ask for your sudo password at the beginning and
 towards the end. The entire process takes about half an hour, so just keep a
 loose eye on it.
 
-     sudo apt-get install curl
-     bash < <(curl -s -k -B https://raw.github.com/IronFoundry/vcap/ironfoundry/dev_setup/bin/vcap_dev_setup)
+     $ sudo apt-get install curl
+     $ curl -s -k -B https://raw.github.com/IronFoundry/vcap/ironfoundry/dev_setup/bin/vcap_dev_setup > vcap_dev_setup
+     $ /bin/bash ./vcap_dev_setup
 
 NOTE: The automated setup does not auto-start the system. Once you are
 done with the setup, exit your current shell, restart a new shell and continue
