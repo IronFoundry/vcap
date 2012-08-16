@@ -11,7 +11,7 @@ default[:cloud_controller][:local_route] = nil
 default[:cloud_controller][:admins] = ["cfadmin@ironfoundry.org"]
 
 # Default builtin services
-default[:cloud_controller][:builtin_services] = ["redis", "mongodb", "mysql", "neo4j", "rabbitmq", "postgresql", "vblob", "memcached", "filesystem", "elasticsearch", "couchdb", "echo", "mssql"]
+default[:cloud_controller][:builtin_services] = ["redis", "mongodb", "mysql", "neo4j", "rabbitmq", "postgresql", "vblob", "memcached", "filesystem", "elasticsearch", "couchdb", "echo", "mssql", "mssb"]
 
 # Default capacity
 default[:capacity][:max_uris] = 4
