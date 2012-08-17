@@ -17,6 +17,8 @@ jobs:
           - postgresql
           - vblob
           - filesystem
+          - mssql
+          - mssb
     - health_manager
     - dea
     - uaa
