@@ -84,6 +84,9 @@ if [ -z "$CLOUDFOUNDRY_DOMAIN" ]; then
   CLOUDFOUNDRY_DOMAIN=vcap.me
 fi
 
+# apt-get update
+run_cmd apt-get update
+
 # Check if we have access to the web
 echo "Installing wget..."
 if ! run_cmd apt-get $APT_CONFIG install -qym wget; then
