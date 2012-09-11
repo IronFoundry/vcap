@@ -12,6 +12,7 @@ default[:cloud_controller][:admins] = ["cfadmin@ironfoundry.org"]
 default[:cloud_controller][:runtimes_file] = "runtimes.yml"
 
 # Staging
+default[:cloud_controller][:staging][:aspdotnet] = "aspdotnet.yml"
 default[:cloud_controller][:staging][:grails] = "grails.yml"
 default[:cloud_controller][:staging][:lift] = "lift.yml"
 default[:cloud_controller][:staging][:node] = "node.yml"
