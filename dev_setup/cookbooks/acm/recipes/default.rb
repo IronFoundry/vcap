@@ -16,6 +16,8 @@ gem_package "postgres" do
   gem_binary File.join(node[:ruby][:path], "bin", "gem")
 end
 
+cf_pg_reset_user_password(:acmdb)
+
 template "acm.yml" do
   path File.join(node[:deployment][:config_path], "acm.yml")
   source "acm.yml.erb"
@@ -23,4 +25,4 @@ template "acm.yml" do
   mode 0644
 end
 
-cf_bundle_install(File.expand_path(File.join(node["cloudfoundry"]["path"], "acm")))
+cf_bundle_install(File.expand_path("acm", node["cloudfoundry"]["path"]))

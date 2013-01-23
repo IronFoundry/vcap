@@ -1,5 +1,5 @@
 class JobManager
-  [NATS, CF, CCDB, ACMDB, UAADB].each do |job|
+  [NATS, CF, CCDB, ACMDB, UAADB, SERVICES_REDIS].each do |job|
     task job.to_sym do
       install(job)
     end
@@ -11,8 +11,20 @@ class JobManager
     end
   end
 
-  [ROUTER, DEA, UAA, ACM].each do |job|
+  [ROUTER, DEA, UAA, ACM, STAGER].each do |job|
     task job.to_sym => [CF.to_sym, NATS.to_sym] do
+      install(job)
+    end
+  end
+
+  SERVICE_TOOLS.each do |job|
+    task job.to_sym => [CF.to_sym, NATS.to_sym] do
+      install(job)
+    end
+  end
+
+  SERVICE_LIFECYCLE.each do |job|
+    task job.to_sym => [CF.to_sym, NATS.to_sym, SERVICES_REDIS.to_sym] do
       install(job)
     end
   end
@@ -23,7 +35,19 @@ class JobManager
     end
   end
 
+  SERVICES_WORKER.each do |job|
+    task job.to_sym => [SERVICES_REDIS.to_sym] do
+      install(job)
+    end
+  end
+
   SERVICES_GATEWAY.each do |job|
+    task job.to_sym => [CF.to_sym, CC.to_sym, NATS.to_sym] do
+      install(job)
+    end
+  end
+
+  SERVICES_AUXILIARY.each do |job|
     task job.to_sym => [CF.to_sym, CC.to_sym, NATS.to_sym] do
       install(job)
     end

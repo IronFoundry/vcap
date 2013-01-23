@@ -15,8 +15,12 @@ node[:dea][:runtimes].each do |runtime|
     include_recipe "ruby"
   when "ruby18"
     include_recipe "ruby::ruby18"
+  when "ruby193"
+    include_recipe "ruby::ruby193"
   when "node06"
     include_recipe "node::node06"
+  when "node08"
+    include_recipe "node::node08"
   when "node", "node04"
     include_recipe "node::node04"
   when "python2"
@@ -33,4 +37,4 @@ template node[:dea][:config_file] do
   mode 0644
 end
 
-cf_bundle_install(File.expand_path(File.join(node["cloudfoundry"]["path"], "dea")))
+cf_bundle_install(File.join(node[:cloudfoundry][:path], "dea"))

@@ -9,12 +9,16 @@ node[:ccdb][:host] ||= cf_local_ip
 node[:acmdb][:host] ||= cf_local_ip
 node[:uaadb][:host] ||= cf_local_ip
 node[:postgresql][:host] ||= cf_local_ip
+node[:redis_resque][:host] ||= cf_local_ip
+node[:vcap_redis][:host] ||= cf_local_ip
+node[:serialization_data_server][:host] ||= cf_local_ip
 
 [
   node[:deployment][:home], File.join(node[:deployment][:home], "deploy"),
   node[:deployment][:log_path], File.join(node[:deployment][:home], "sys", "log"),
   node[:deployment][:config_path],
   File.join(node[:deployment][:config_path], "staging"),
+  File.join(node[:deployment][:config_path], "legacy_staging"),
   node[:deployment][:setup_cache],
 ].each do |dir|
   directory dir do
@@ -29,7 +33,8 @@ end
 var_vcap = File.join("", "var", "vcap")
 [var_vcap, File.join(var_vcap, "sys"), File.join(var_vcap, "db"), File.join(var_vcap, "services"),
  File.join(var_vcap, "data"), File.join(var_vcap, "data", "cloud_controller"),
- File.join(var_vcap, "sys", "log"), File.join(var_vcap, "sys", "run"), File.join(var_vcap, "data", "cloud_controller", "tmp"),
+ File.join(var_vcap, "sys", "log"), File.join(var_vcap, "sys", "run"),
+ File.join(var_vcap, "data", "stager", "tmp"), File.join(var_vcap, "data", "cloud_controller", "tmp"),
  File.join(var_vcap, "data", "cloud_controller", "staging"),
  File.join(var_vcap, "data", "db"), File.join("", "var", "vcap.local"),
  File.join("", "var", "vcap.local", "staging")].each do |dir|
@@ -50,7 +55,9 @@ template node[:deployment][:info_file] do
   variables({
     :name => node[:deployment][:name],
     :ruby_bin_dir => File.join(node[:ruby][:path], "bin"),
+    :node_bin_dir => File.join(node[:node08][:path], "bin"),
     :maven_bin_dir => File.join(node[:maven][:path], "bin"),
+    :cloudfoundry_home => node[:cloudfoundry][:home],
     :cloudfoundry_path => node[:cloudfoundry][:path],
     :deployment_log_path => node[:deployment][:log_path]
   })

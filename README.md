@@ -50,8 +50,8 @@ server VM.
 
 ### Step 1: create a pristine VM with ssh
 
-* setup a VM with a pristine Ubuntu 10.04.2 server 64bit image,
-  [download here](http://www.ubuntu.com/download/ubuntu/download)
+* setup a VM with a pristine Ubuntu 10.04.4 server 64bit image,
+  [download here](http://releases.ubuntu.com/)
 * setup your VM with 1G or more of memory
 * you may wish to snapshot your VM now in case things go pear shaped
   (great snapshot spots are here and after step 4)
@@ -126,29 +126,23 @@ will need to modify the target to include it here, like `api.vcap.me:8080`.
 Testing your setup
 ------------------
 
-Once the system is installed, you can run the following command Basic System
-Validation Tests (BVT) to ensure that major functionality is working. BVTs
-require additional dependencies of Maven and the JDK, which can be installed
-with:
+Once the system is installed, you can run the following Yeti cases(Yeti stands
+for "Yeti Extraordinary Test Infrastructure") to ensure that major functionality
+is working.
 
-    sudo apt-get install default-jdk maven2
+You can run the Yeti cases as the following steps:
 
-Now that you have the necessary dependencies, you can run the BVTs:
+    cd cloudfoundry/vcap/tests
+    ./update  ## this is not required for running administrative test cases
+    bundle exec rake full[1]
 
-    cd cloudfoundry/vcap
-    cd tests && bundle package; bundle install && cd ..
-    rake tests
-
-### Unit tests can also be run using the following.
-
-    cd cloud_controller
-    rake spec
-    cd ../dea
-    rake spec
-    cd ../router
-    rake spec
-    cd ../health_manager
-    rake spec
+During the first time, Yeti will prompt you for information about your environment:
+  - target
+  - test user/test password
+  - admin user/admin password
+     <br>target should be "api.vcap.me".
+     <br>This information except password is saved to ~/.bvt/config.yml file.
+     <br>When run the second time around, Yeti will not prompt for the information again.
 
 ### Step 6: you are done, make sure you can run a simple hello world app.
 
@@ -162,8 +156,8 @@ Cut and paste the following app into a ruby file (lets say env.rb):
     require 'sinatra'
 
     get '/' do
-      host = ENV['VMC_APP_HOST']
-      port = ENV['VMC_APP_PORT']
+      host = ENV['VCAP_APP_HOST']
+      port = ENV['VCAP_APP_PORT']
       "<h1>XXXXX Hello from the Cloud! via: #{host}:#{port}</h1>"
     end
 
@@ -195,3 +189,8 @@ Note that hitting refresh will show a different port in each refresh reflecting 
     +-------------+----+---------+-------------+----------+
     | env         | 1  | RUNNING | env.vcap.me |          |
     +-------------+----+---------+-------------+----------+
+
+## File a Bug
+
+To file a bug against Cloud Foundry Open Source and its components, sign up and use our
+bug tracking system: [http://cloudfoundry.atlassian.net](http://cloudfoundry.atlassian.net)

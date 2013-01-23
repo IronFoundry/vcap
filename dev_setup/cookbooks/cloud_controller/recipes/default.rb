@@ -28,7 +28,17 @@ template node[:cloud_controller][:config_file] do
     :builtin_services => builtin_services
   })
 end
-cf_bundle_install(File.expand_path(File.join(node["cloudfoundry"]["path"], "cloud_controller")))
+
+template node[:cloud_controller][:runtimes_file] do
+   path File.join(node[:deployment][:config_path], node[:cloud_controller][:runtimes_file])
+   source "runtimes.yml.erb"
+   owner node[:deployment][:user]
+   mode 0644
+end
+
+cf_bundle_install(File.expand_path(File.join("cloud_controller", "cloud_controller"), node[:cloudfoundry][:path]))
+
+cf_pg_reset_user_password(:ccdb)
 
 staging_dir = File.join(node[:deployment][:config_path], "staging")
 node[:cloud_controller][:staging].each_pair do |framework, config|

@@ -5,7 +5,14 @@ service:
   version: "1.4"
   description: 'Neo4j NOSQL store'
   plans: ['free']
-  tags: ['neo4j', 'neo4j-1.4', 'nosql']
+  default_plan: 'free'
+  tags: ['nosql']
+  timeout: <%= node[:neo4j_gateway][:service][:timeout] %>
+  supported_versions: <%= "['#{node[:neo4j][:supported_versions].keys.join("', '")}']"%>
+  version_aliases:
+<% node[:neo4j][:version_aliases].each do |a, v| %>
+    "<%= a %>": "<%= v %>"
+<% end %>
 host: localhost
 index: 0
 token: <%= node[:neo4j_node][:token] %>
@@ -13,4 +20,4 @@ logging:
   level: debug
 mbus: nats://<%= node[:nats_server][:user] %>:<%= node[:nats_server][:password] %>@<%= node[:nats_server][:host] %>:<%= node[:nats_server][:port] %>/
 pid: /var/vcap/sys/run/neo4j_service.pid
-node_timeout: 10
+node_timeout: <%= node[:neo4j_gateway][:node_timeout] %>

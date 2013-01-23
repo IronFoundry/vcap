@@ -40,7 +40,7 @@ spec = YAML.load_file(deployment_spec)
 spec["deployment"] ||= {}
 spec["deployment"]["name"] ||= DEPLOYMENT_DEFAULT_NAME
 spec["deployment"]["user"] ||= ENV["USER"]
-spec["deployment"]["group"] ||= `id -g`.strip
+spec["deployment"]["group"] ||= `id -g`.strip.to_i
 spec["deployment"]["domain"] ||= cloudfoundry_domain
 spec["cloudfoundry"] ||= {}
 spec["cloudfoundry"]["home"] ||= cloudfoundry_home
@@ -71,7 +71,10 @@ run_list = []
 job_roles.each do |role|
   run_list << "role[#{role}]"
 end
+
 spec["run_list"] = run_list
+
+puts "RUN LIST = #{run_list}"
 
 # Merge the job specs
 spec.merge!(job_specs)
